@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "..\\aws-dev-machine"
+		},
+		{
+			"path": "game-of-life-board"
+		},
+		{
+			"path": "game-of-life-www"
+		}
+	],
+	"settings": {}
+}

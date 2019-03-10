@@ -23,5 +23,5 @@ extern {
 
 #[wasm_bindgen]
 pub fn greet() {
-    alert("Hello, wgol!");
+    alert("Hello, wasm!");
 }

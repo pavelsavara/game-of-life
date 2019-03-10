@@ -12,7 +12,7 @@
   "author": "Pavel Savara",
   "license": "MIT",
   "devDependencies": {
-    "game-of-life-board-pack": "^0.1.0",
+    "game-of-life-board": "^0.1.0",
     "webpack": "^4.29.3",
     "webpack-cli": "^3.1.0",
     "webpack-dev-server": "^3.1.5",

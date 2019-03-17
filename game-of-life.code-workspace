@@ -12,6 +12,9 @@
 		{
 			"name": "SSH FS - aws",
 			"uri": "ssh://aws/"
+		},
+		{
+			"path": "game-of-life-ts"
 		}
 	],
 	"settings": {}

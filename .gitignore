@@ -1,5 +1,5 @@
-/target
 **/*.rs.bk
-game-of-life-board/target/**
-game-of-life-board/pkg/**
-game-of-life-www/node_modules/**
+**/target/**
+**/pkg/**
+**/node_modules/**
+

@@ -10,10 +10,6 @@
 			"path": "game-of-life-www"
 		},
 		{
-			"name": "SSH FS - aws",
-			"uri": "ssh://aws/"
-		},
-		{
 			"path": "game-of-life-ts"
 		}
 	],

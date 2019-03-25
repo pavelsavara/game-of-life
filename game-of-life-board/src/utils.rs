@@ -1,5 +1,5 @@
-
-use cfg_if::cfg_if;
+extern crate cfg_if;
+use self::cfg_if::cfg_if;
 
 cfg_if! {
     // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global

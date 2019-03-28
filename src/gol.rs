@@ -55,42 +55,42 @@ pub fn gol(generation: &Board) -> Board {
         .collect::<Board>()
 }
 
-const WIDTH: usize = 30;
-const HEIGHT: usize = 30;
-
-pub fn render(generation: &Board) -> String {
-    let avg_x: i32 = generation.iter().map(|p| p.x).sum::<i32>() / (generation.len() as i32);
-    let avg_y: i32 = generation.iter().map(|p| p.y).sum::<i32>() / (generation.len() as i32);
-    let mut view: [[bool; WIDTH]; HEIGHT] = [[false; WIDTH]; HEIGHT];
-
-    for point in generation.iter() {
-        let shift_x: usize = (point.x - avg_x + (WIDTH / 2) as i32) as usize;
-        let shift_y: usize = (point.y - avg_y + (HEIGHT / 2) as i32) as usize;
-        if shift_x > 0 && shift_y > 0 && shift_x < WIDTH && shift_y < HEIGHT {
-            view[shift_y][shift_x] = true;
-        }
-    }
-
-    let mut sb = String::from("Hello, world!");
-
-    for y in 0..HEIGHT {
-        for x in 0..WIDTH {
-            if view[y][x] {
-                sb.push('X');
-            } else {
-                sb.push(' ');
-            }
-        }
-        sb.push('\n');
-    }
-
-    sb
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
     use std::{thread, time};
+
+    const WIDTH: usize = 30;
+    const HEIGHT: usize = 30;
+
+    pub fn render(generation: &Board) -> String {
+        let avg_x: i32 = generation.iter().map(|p| p.x).sum::<i32>() / (generation.len() as i32);
+        let avg_y: i32 = generation.iter().map(|p| p.y).sum::<i32>() / (generation.len() as i32);
+        let mut view: [[bool; WIDTH]; HEIGHT] = [[false; WIDTH]; HEIGHT];
+
+        for point in generation.iter() {
+            let shift_x: usize = (point.x - avg_x + (WIDTH / 2) as i32) as usize;
+            let shift_y: usize = (point.y - avg_y + (HEIGHT / 2) as i32) as usize;
+            if shift_x > 0 && shift_y > 0 && shift_x < WIDTH && shift_y < HEIGHT {
+                view[shift_y][shift_x] = true;
+            }
+        }
+
+        let mut sb = String::from("Hello, world!");
+
+        for y in 0..HEIGHT {
+            for x in 0..WIDTH {
+                if view[y][x] {
+                    sb.push('X');
+                } else {
+                    sb.push(' ');
+                }
+            }
+            sb.push('\n');
+        }
+
+        sb
+    }
 
     #[test]
     fn test_blinker() {

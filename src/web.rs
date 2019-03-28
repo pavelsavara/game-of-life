@@ -36,10 +36,9 @@ pub fn start() -> Result<(), JsValue> {
     return Ok(());
 }
 
-pub fn render(n:f32) -> Result<(), JsValue> {
+pub fn render(vertices:Vec<f32>) -> Result<(), JsValue> {
     let context = get_context()?;
 
-    let vertices: [f32; 9] = [-0.7*n, -0.7, 0.0, 0.7, -0.7, 0.0, 0.0, 0.7, 0.0];
     let memory_buffer = wasm_bindgen::memory()
         .dyn_into::<WebAssembly::Memory>()?
         .buffer();

@@ -13,7 +13,10 @@ if (canvas.width != displayWidth ||
 
 import('./pkg/game_of_life')
   .then(gol => {
-    gol.render(11.0);
+    gol.new_board();
+    setInterval(()=>{
+      gol.render();
+    },1000)
   })
   .catch(console.error);
 

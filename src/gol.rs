@@ -3,8 +3,8 @@ use self::itertools::Itertools;
 
 #[derive(PartialEq, PartialOrd, Eq, Ord, Debug)]
 pub struct Position {
-    x: i32,
-    y: i32,
+    pub x: i32,
+    pub y: i32,
 }
 
 pub type Board = Vec<Position>;

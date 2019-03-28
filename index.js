@@ -1,22 +1,21 @@
 var canvas = document.getElementById("canvas");
-var displayWidth = canvas.clientWidth;
-var displayHeight = canvas.clientHeight;
+var display = Math.min(canvas.clientWidth,canvas.clientHeight);
 
 // Check if the canvas is not the same size.
-if (canvas.width != displayWidth ||
-  canvas.height != displayHeight) {
+if (canvas.width != display ||
+  canvas.height != display) {
 
   // Make the canvas the same size
-  canvas.width = displayWidth;
-  canvas.height = displayHeight;
+  canvas.width = display;
+  canvas.height = display;
 }
 
 import('./pkg/game_of_life')
   .then(gol => {
     gol.new_board();
-    setInterval(()=>{
+    setInterval(() => {
       gol.render();
-    },1000)
+    }, 0)
   })
   .catch(console.error);
 

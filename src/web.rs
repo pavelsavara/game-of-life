@@ -36,7 +36,7 @@ pub fn start() -> Result<(), JsValue> {
     return Ok(());
 }
 
-pub fn render(vertices:Vec<f32>) -> Result<(), JsValue> {
+pub fn render(vertices: Vec<f32>) -> Result<(), JsValue> {
     let context = get_context()?;
 
     let memory_buffer = wasm_bindgen::memory()
@@ -122,27 +122,9 @@ fn get_context() -> Result<web_sys::WebGlRenderingContext, JsValue> {
     let document = web_sys::window().unwrap().document().unwrap();
     let canvas = document.get_element_by_id("canvas").unwrap();
 
-    let canvas2 = match canvas.dyn_into::<web_sys::HtmlCanvasElement>() {
-        Ok(canvas2) => canvas2,
-        Err(error) =>{
-            panic!("Eeeek{:?}", error)
-        },
-    };
-
-
-    let context = match canvas2.get_context("webgl") {
-        Ok(context) => context,
-        Err(error) =>{
-            panic!("Eeeek{:?}", error)
-        },
-    };
-
-    let context2=match context.unwrap().dyn_into::<WebGlRenderingContext>(){
-        Ok(context) => context,
-        Err(error) =>{
-            panic!("Eeeek{:?}", error)
-        },
-    };
+    let canvas2 = canvas.dyn_into::<web_sys::HtmlCanvasElement>()?;
+    let context = canvas2.get_context("webgl")?;
+    let context2 = context.unwrap().dyn_into::<WebGlRenderingContext>()?;
 
     return Ok(context2);
 }

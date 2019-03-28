@@ -9,13 +9,12 @@ extern crate web_sys;
 //extern crate itertools;
 
 //use itertools::Itertools;
+use gol::*;
 use std::sync::Mutex;
 use wasm_bindgen::prelude::*;
-use gol::*;
 lazy_static! {
     static ref BOARD: Mutex<gol::Board> = Mutex::new(vec![]);
 }
-
 
 #[wasm_bindgen(start)]
 pub fn start() -> Result<(), JsValue> {
@@ -28,21 +27,29 @@ pub fn render() -> Result<(), JsValue> {
 
     *board = gol::gol(&board);
 
-    let vertices:Vec<f32> = (*board).iter()
-    .map(|current: &Position| {
-        let fx0=current.x as f32;
-        let fy0=current.y as f32;
-        let fx1=(current.x+1) as f32;
-        let fy1=(current.y+1) as f32;
-        let size=0.1_f32;
-        let zero=0.00_f32;
-        let vert = vec![fx0*size,fy0*size,zero,
-                        fx1*size,fy0*size,zero,
-                        fx0*size,fy1*size,zero];
-        vert
-    })    
-    .flatten()
-    .collect::<Vec<f32>>();
+    let vertices: Vec<f32> = (*board)
+        .iter()
+        .map(|current: &Position| {
+            let zero = 0.00_f32;
+            let grid = 0.01_f32;
+            let size = 0.0090_f32;
+            let fx0 = (current.x as f32) * grid;
+            let fy0 = (current.y as f32) * grid;
+            let fx1 = (current.x as f32) * grid + size;
+            let fy1 = (current.y as f32) * grid + size;
+            let vert = vec![
+                fx0, fy0, zero,
+                fx1, fy0, zero,
+                fx0, fy1, zero,
+
+                fx1, fy1, zero,
+                fx0, fy1, zero,
+                fx1, fy0, zero,
+            ];
+            vert
+        })
+        .flatten()
+        .collect::<Vec<f32>>();
 
     return web::render(vertices);
 }
@@ -59,6 +66,6 @@ pub fn new_board() -> Result<(), JsValue> {
 
     let mut board = BOARD.lock().unwrap();
     *board = pentomimo;
-    
+
     return Ok(());
 }

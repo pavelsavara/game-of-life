@@ -1,58 +1,73 @@
 extern crate itertools;
 use self::itertools::Itertools;
 
-#[derive(PartialEq, PartialOrd, Eq, Ord, Debug)]
-pub struct Position {
+#[derive(PartialEq, PartialOrd, Eq, Ord, Debug, Clone)]
+pub struct Cell {
     pub x: i32,
     pub y: i32,
 }
 
-pub type Board = Vec<Position>;
+pub type Cells = Vec<Cell>;
 
-const OFFSETS_AROUND: [[i32; 2]; 8] = [
+pub type BoolCell = (bool, Cell);
+
+pub type BoolCells = Vec<BoolCell>;
+
+const OFFSETS_AROUND: [[i32; 2]; 9] = [
     [-1, -1],
     [0, -1],
     [1, -1],
     [-1, 0],
+    [0, 0],
     [1, 0],
     [-1, 1],
     [0, 1],
     [1, 1],
 ];
 
-fn rules(count: usize, is_alive: bool) -> bool {
-    count == 3 || (count == 2 && is_alive)
-}
-
-pub fn gol(generation: &Board) -> Board {
+pub fn next_gen(generation: &Cells) -> Cells {
     generation
         .iter()
-        .map(|current: &Position| {
+        // generate 9 cell candidate tuples for each cell of previous generation
+        .map(|current: &Cell| {
             OFFSETS_AROUND
                 .iter()
-                .map(|o| Position {
-                    x: (current.x + o[0]),
-                    y: (current.y + o[1]),
+                .map(|o| {
+                    (
+                        // 0th element of the tuple is true when this is the original cell location
+                        o[0] == 0 && o[1] == 0,
+                        Cell {
+                            x: (current.x + o[0]),
+                            y: (current.y + o[1]),
+                        },
+                    )
                 })
-                .collect::<Board>()
+                .collect::<BoolCells>()
         })
         .flatten()
-        .sorted()
-        .dedup()
-        .filter(|current: &Position| {
-            rules(
-                OFFSETS_AROUND
-                    .iter()
-                    .map(|o| Position {
-                        x: (current.x + o[0]),
-                        y: (current.y + o[1]),
-                    })
-                    .filter(|q| generation.contains(q))
-                    .count(),
-                generation.contains(current),
-            )
+        // sort and group cell candidates by location
+        .sorted_by(|a: &BoolCell, b: &BoolCell| a.1.cmp(&b.1))
+        .group_by(|current: &BoolCell| current.1.clone())
+        .into_iter()
+        .map(|(key, group)| {
+            // for each candidate location group 
+            // find if it lived in prev generation 
+            // and how many other live cells spilled candidate into it
+            let (was_alive, count) = group
+                .into_iter()
+                .fold((false, 0), |acc, candidate| match candidate.0 {
+                    true => (true, acc.1),
+                    false => (acc.0, acc.1 + 1),
+                });
+            // apply game of life rules
+            let to_live = count == 3 || (count == 2 && was_alive);
+            (to_live, key.clone())
         })
-        .collect::<Board>()
+        // filter dead cells
+        .filter(|c| c.0)
+        // unpack tuple
+        .map(|c| c.1)
+        .collect::<Cells>()
 }
 
 #[cfg(test)]
@@ -63,7 +78,12 @@ mod tests {
     const WIDTH: usize = 30;
     const HEIGHT: usize = 30;
 
-    pub fn render(generation: &Board) -> String {
+    pub fn render(generation: &Cells) -> String {
+        let population = generation.len();
+        if population == 0 {
+            return String::from("All died");
+        }
+
         let avg_x: i32 = generation.iter().map(|p| p.x).sum::<i32>() / (generation.len() as i32);
         let avg_y: i32 = generation.iter().map(|p| p.y).sum::<i32>() / (generation.len() as i32);
         let mut view: [[bool; WIDTH]; HEIGHT] = [[false; WIDTH]; HEIGHT];
@@ -76,7 +96,7 @@ mod tests {
             }
         }
 
-        let mut sb = String::from("Hello, world!");
+        let mut sb = format!("{:?}", population);
 
         for y in 0..HEIGHT {
             for x in 0..WIDTH {
@@ -94,33 +114,33 @@ mod tests {
 
     #[test]
     fn test_blinker() {
-        let blinker: Board = vec![
-            Position { x: 0, y: -1 },
-            Position { x: 0, y: 0 },
-            Position { x: 0, y: 1 },
+        let blinker: Cells = vec![
+            Cell { x: 0, y: -1 },
+            Cell { x: 0, y: 0 },
+            Cell { x: 0, y: 1 },
         ];
         println!("{:?}", blinker);
 
-        let g2 = gol(&blinker);
+        let g2 = next_gen(&blinker);
         println!("{:?}", g2);
     }
 
     #[test]
     fn test_pentomimo() {
         let millis = time::Duration::from_millis(100);
-        let pentomimo: Board = vec![
-            Position { x: -1, y: 0 },
-            Position { x: -1, y: 1 },
-            Position { x: 0, y: -1 },
-            Position { x: 0, y: 0 },
-            Position { x: 1, y: 0 },
+        let pentomimo: Cells = vec![
+            Cell { x: -1, y: 0 },
+            Cell { x: -1, y: 1 },
+            Cell { x: 0, y: -1 },
+            Cell { x: 0, y: 0 },
+            Cell { x: 1, y: 0 },
         ];
         println!("{:?}", pentomimo);
 
-        let mut board = pentomimo;
+        let mut cells = pentomimo;
         for _ in 0..40 {
-            board = gol(&board);
-            let view = render(&board);
+            cells = next_gen(&cells);
+            let view = render(&cells);
             print!("{}[2J", 27 as char);
             print!("{}", &view);
             thread::sleep(millis);

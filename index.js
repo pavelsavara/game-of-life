@@ -13,8 +13,13 @@ if (canvas.width != display ||
 import('./pkg/game_of_life')
   .then(gol => {
     gol.new_board();
+
+    canvas.addEventListener('click',e=>{
+      gol.new_board();
+    })
+
     setInterval(() => {
-      gol.render();
+      gol.render_next();
     }, 0)
   })
   .catch(console.error);

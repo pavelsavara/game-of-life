@@ -13,7 +13,7 @@ use gol::*;
 use std::sync::Mutex;
 use wasm_bindgen::prelude::*;
 lazy_static! {
-    static ref BOARD: Mutex<gol::Board> = Mutex::new(vec![]);
+    static ref BOARD: Mutex<gol::Cells> = Mutex::new(vec![]);
 }
 
 #[wasm_bindgen(start)]
@@ -22,17 +22,17 @@ pub fn start() -> Result<(), JsValue> {
 }
 
 #[wasm_bindgen()]
-pub fn render() -> Result<(), JsValue> {
+pub fn render_next() -> Result<(), JsValue> {
     let mut board = BOARD.lock().unwrap();
 
-    *board = gol::gol(&board);
+    *board = gol::next_gen(&board);
 
     let vertices: Vec<f32> = (*board)
         .iter()
-        .map(|current: &Position| {
+        .map(|current: &Cell| {
             let zero = 0.00_f32;
             let grid = 0.01_f32;
-            let size = 0.0090_f32;
+            let size = 0.0080_f32;
             let fx0 = (current.x as f32) * grid;
             let fy0 = (current.y as f32) * grid;
             let fx1 = (current.x as f32) * grid + size;
@@ -56,16 +56,16 @@ pub fn render() -> Result<(), JsValue> {
 
 #[wasm_bindgen()]
 pub fn new_board() -> Result<(), JsValue> {
-    let pentomimo: Board = vec![
-        Position { x: -1, y: 0 },
-        Position { x: -1, y: 1 },
-        Position { x: 0, y: -1 },
-        Position { x: 0, y: 0 },
-        Position { x: 1, y: 0 },
+    let pentomimo: Cells = vec![
+        Cell { x: -1, y: 0 },
+        Cell { x: -1, y: 1 },
+        Cell { x: 0, y: -1 },
+        Cell { x: 0, y: 0 },
+        Cell { x: 1, y: 0 },
     ];
 
-    let mut board = BOARD.lock().unwrap();
-    *board = pentomimo;
+    let mut cells = BOARD.lock().unwrap();
+    *cells = pentomimo;
 
     return Ok(());
 }

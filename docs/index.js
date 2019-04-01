@@ -267,7 +267,7 @@
 /******/ 				promises.push(installedWasmModuleData);
 /******/ 			else {
 /******/ 				var importObject = wasmImportObjects[wasmModuleId]();
-/******/ 				var req = fetch(__webpack_require__.p + "" + {"./pkg/game_of_life_bg.wasm":"6c6d4625e0dcea64449c"}[wasmModuleId] + ".module.wasm");
+/******/ 				var req = fetch(__webpack_require__.p + "" + {"./pkg/game_of_life_bg.wasm":"8bab68df23234ccb0fc7"}[wasmModuleId] + ".module.wasm");
 /******/ 				var promise;
 /******/ 				if(importObject instanceof Promise && typeof WebAssembly.compileStreaming === 'function') {
 /******/ 					promise = Promise.all([WebAssembly.compileStreaming(req), importObject]).then(function(items) {
@@ -368,7 +368,7 @@
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-eval("var canvas = document.getElementById(\"canvas\");\nvar display = Math.min(canvas.clientWidth,canvas.clientHeight);\n\n// Check if the canvas is not the same size.\nif (canvas.width != display ||\n  canvas.height != display) {\n\n  // Make the canvas the same size\n  canvas.width = display;\n  canvas.height = display;\n}\n\nPromise.all(/*! import() */[__webpack_require__.e(0), __webpack_require__.e(1)]).then(__webpack_require__.bind(null, /*! ./pkg/game_of_life */ \"./pkg/game_of_life.js\"))\n  .then(gol => {\n    gol.new_board();\n    setInterval(() => {\n      gol.render();\n    }, 0)\n  })\n  .catch(console.error);\n\n\n\n//# sourceURL=webpack:///./index.js?");
+eval("var canvas = document.getElementById(\"canvas\");\nvar display = Math.min(canvas.clientWidth,canvas.clientHeight);\n\n// Check if the canvas is not the same size.\nif (canvas.width != display ||\n  canvas.height != display) {\n\n  // Make the canvas the same size\n  canvas.width = display;\n  canvas.height = display;\n}\n\nPromise.all(/*! import() */[__webpack_require__.e(0), __webpack_require__.e(1)]).then(__webpack_require__.bind(null, /*! ./pkg/game_of_life */ \"./pkg/game_of_life.js\"))\n  .then(gol => {\n    gol.new_board();\n    setInterval(() => {\n      gol.render_next();\n    }, 0)\n  })\n  .catch(console.error);\n\n\n\n//# sourceURL=webpack:///./index.js?");
 
 /***/ })
 

@@ -62,8 +62,8 @@ pub fn next_gen(generation: &Cells) -> Cells {
     
     // sort and group cell candidates by location
     let grouped_by_location = candidates_with_duplicates
-        .sorted_by(|candidate_a: &BoolCell, candidate_b: &BoolCell| candidate_a.1.cmp(&candidate_b.1))
-        .group_by(|candidate: &BoolCell| candidate.1.clone());
+        .sorted_by(|candidate_a, candidate_b| candidate_a.1.cmp(&candidate_b.1))
+        .group_by(|candidate| candidate.1.clone());
     
     grouped_by_location.into_iter()
         .map(|(key, group)| {

@@ -25,47 +25,53 @@ const OFFSETS_AROUND: [[i32; 2]; 9] = [
     [1, 1],
 ];
 
+pub fn cells_around(current: &Cell) -> BoolCells {
+    OFFSETS_AROUND.iter()
+        .map(|o| {
+            (
+                // 0th element of the tuple is true when this is the original cell location
+                o[0] == 0 && o[1] == 0,
+                Cell {
+                    x: (current.x + o[0]),
+                    y: (current.y + o[1]),
+                },
+            )
+        })
+        .collect::<BoolCells>()
+}
+
+fn should_live<I>(group: I) -> bool where I: IntoIterator<Item = BoolCell>,
+{
+    // for each candidate location group
+    // find if it lived in prev generation
+    // and how many other live cells spilled candidate into it
+    let (was_alive, count) = group.into_iter()
+            .fold((false, 0), |acc, candidate| match candidate.0 {
+                true => (true, acc.1),
+                false => (acc.0, acc.1 + 1),
+            });
+    // apply game of life rules
+    count == 3 || (count == 2 && was_alive)
+}
+
 pub fn next_gen(generation: &Cells) -> Cells {
-    generation
-        .iter()
-        // generate 9 cell candidate tuples for each cell of previous generation
-        .map(|current: &Cell| {
-            OFFSETS_AROUND
-                .iter()
-                .map(|o| {
-                    (
-                        // 0th element of the tuple is true when this is the original cell location
-                        o[0] == 0 && o[1] == 0,
-                        Cell {
-                            x: (current.x + o[0]),
-                            y: (current.y + o[1]),
-                        },
-                    )
-                })
-                .collect::<BoolCells>()
-        })
-        .flatten()
-        // sort and group cell candidates by location
-        .sorted_by(|a: &BoolCell, b: &BoolCell| a.1.cmp(&b.1))
-        .group_by(|current: &BoolCell| current.1.clone())
-        .into_iter()
+    // generate 9 cell candidate tuples for each cell of previous generation
+    let candidates_with_duplicates = generation.iter()
+        .map(cells_around)
+        .flatten();
+    
+    // sort and group cell candidates by location
+    let grouped_by_location = candidates_with_duplicates
+        .sorted_by(|candidate_a: &BoolCell, candidate_b: &BoolCell| candidate_a.1.cmp(&candidate_b.1))
+        .group_by(|candidate: &BoolCell| candidate.1.clone());
+    
+    grouped_by_location.into_iter()
         .map(|(key, group)| {
-            // for each candidate location group 
-            // find if it lived in prev generation 
-            // and how many other live cells spilled candidate into it
-            let (was_alive, count) = group
-                .into_iter()
-                .fold((false, 0), |acc, candidate| match candidate.0 {
-                    true => (true, acc.1),
-                    false => (acc.0, acc.1 + 1),
-                });
-            // apply game of life rules
-            let to_live = count == 3 || (count == 2 && was_alive);
-            (to_live, key.clone())
+            let alive = should_live(group.into_iter());
+            let cell =key.clone();
+            (alive, cell)
         })
-        // filter dead cells
         .filter(|c| c.0)
-        // unpack tuple
         .map(|c| c.1)
         .collect::<Cells>()
 }

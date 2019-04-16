@@ -6,6 +6,7 @@
 `wasm-pack build`
 `cd pkg`
 `sudo npm link`
-`npm link game-of-life-board`
+`cd ..`
 `npm install`
-`npm run start`
+`npm run build`
+`npm run serve`
